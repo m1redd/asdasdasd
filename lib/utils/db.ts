@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/config";
+const uri= process.env.MONGODB_URI || process.env.MONGODB_LOCAL_URI || "";
 
 if (!uri) {
   throw new Error("MONGODB_URI is required");
