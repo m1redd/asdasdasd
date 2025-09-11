@@ -38,7 +38,7 @@ export default function AdminRequestsPage() {
 
     if (!token) {
       try {
-        const refreshResponse = await fetch("/api/auth/refresh", {
+        const refreshResponse = await fetch("/api/requests/auth/refresh", {
           method: "POST",
           credentials: "include",
         });
@@ -70,7 +70,7 @@ export default function AdminRequestsPage() {
 
     if (response.status === 401) {
       try {
-        const refreshResponse = await fetch("/api/auth/refresh", {
+        const refreshResponse = await fetch("/api/requests/auth/refresh", {
           method: "POST",
           credentials: "include",
         });
@@ -226,20 +226,18 @@ export default function AdminRequestsPage() {
   useEffect(() => {
     try {
       const token = localStorage.getItem("access_token");
-      if (!token) {
-        throw new Error("No token");
+      if (token) {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        if (payload.role !== "admin" && payload.role !== "staff") {
+          window.location.href = "/";
+          return;
+        }
       }
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      if (payload.role !== "admin" && payload.role !== "staff") {
-        window.location.href = "/";
-        return;
-      }
+      fetchRequests();
     } catch (error) {
       localStorage.removeItem("access_token");
       window.location.href = "/auth/request/login";
-      return;
     }
-    fetchRequests();
   }, []);
 
   if (loading)
